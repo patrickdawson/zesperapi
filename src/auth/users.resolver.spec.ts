@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersResolver } from './users.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
-import { AuthPayload, CreateUserInput } from '../generated/graphqlTypings'; // todo @api-interface
+import { AuthPayload, CreateUserInput } from '@zesper/api-interface';
 
 jest.mock('bcryptjs');
 jest.mock('../prisma/prisma.service');

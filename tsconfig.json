@@ -9,7 +9,10 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@zesper/api-interface": ["src/api.interface.ts"]
+    }
   },
   "exclude": ["node_modules"]
 }
