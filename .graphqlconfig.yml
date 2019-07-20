@@ -1,0 +1,13 @@
+projects:
+  database:
+    schemaPath: src/generated/prisma-types.graphql
+    extensions:
+      endpoints:
+        dev: http://localhost:4466/zesper/dev
+        default: http://localhost:4466/zesper/default
+      prisma: prisma/prisma.yml
+      codegen:
+        - generator: prisma-binding
+          language: typescript
+          output:
+            binding: src/generated/prisma.binding.ts

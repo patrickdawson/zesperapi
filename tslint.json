@@ -1,6 +1,9 @@
 {
   "defaultSeverity": "error",
   "extends": ["tslint:recommended"],
+  "linterOptions": {
+    "exclude": ["prisma/generated/*.ts"]
+  },
   "jsRules": {
     "no-unused-expression": true
   },

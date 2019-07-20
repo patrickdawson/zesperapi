@@ -1,0 +1,4 @@
+endpoint: ${env:PRISMA_ENDPOINT}
+datamodel: datamodel.prisma
+databaseType: document
+secret: ${env:PRISMA_SECRET}
