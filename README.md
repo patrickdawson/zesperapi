@@ -26,12 +26,20 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Backend for zesper app. API is provided with GraphQL. Data is stored in mongo database with prisma ORM.
+Both mongo and prisma can be run as docker containers (see docker-compose.yml in prisma directory). 
 
 ## Installation
 
 ```bash
 $ npm install
+```
+
+## Prepare the app
+
+```bash
+$ npm run prisma:get-schema
+$ npm run prisma:codegen
 ```
 
 ## Running the app
