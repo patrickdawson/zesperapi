@@ -4,6 +4,7 @@ import { join } from 'path';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,7 +15,9 @@ import { AppService } from './app.service';
         path: join(process.cwd(), 'src/generated/graphqlTypings.ts'),
       },
     }),
+    AuthModule,
   ],
+  exports: [GraphQLModule],
   controllers: [AppController],
   providers: [AppService],
 })

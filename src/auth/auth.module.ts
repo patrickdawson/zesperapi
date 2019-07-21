@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { HttpStrategy } from './http-strategy';
 import { AuthService } from './auth.service';
-import { UsersModule } from '@zesper/api/auth/users.module';
+import { PrismaModule } from '../prisma/prisma.module';
+import { UsersResolver } from './users.resolver';
 
 @Module({
-  imports: [UsersModule],
-  exports: [UsersModule],
-  providers: [HttpStrategy, AuthService],
+  imports: [PrismaModule],
+  exports: [],
+  providers: [HttpStrategy, AuthService, UsersResolver],
 })
 export class AuthModule {}

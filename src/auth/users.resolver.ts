@@ -9,7 +9,9 @@ import { UserCreateInput } from '../generated/prisma.binding';
 
 @Resolver('Users')
 export class UsersResolver {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {
+    console.log('user resolver loaded');
+  }
 
   private static generateToken(data: { id: string }) {
     return jwt.sign({ userId: data.id }, process.env.JWT_SECRET, {
