@@ -3,6 +3,7 @@ import { UsersResolver } from './users.resolver';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { AuthPayload, CreateUserInput } from '@zesper/api-interface';
+import { ConfigurationModule } from '../configuration/configuration.module';
 
 jest.mock('bcryptjs');
 jest.mock('../prisma/prisma.service');
@@ -17,6 +18,7 @@ describe('UsersResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigurationModule],
       providers: [UsersResolver, PrismaService],
     }).compile();
 

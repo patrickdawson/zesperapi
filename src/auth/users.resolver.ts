@@ -6,15 +6,14 @@ import { User, CreateUserInput, LoginUserInput, AuthPayload, UserQuery } from '@
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './gql-auth.guard';
 import { UserCreateInput } from '../generated/prisma.binding';
+import { ConfigurationService } from '../configuration/configuration.service';
 
 @Resolver('Users')
 export class UsersResolver {
-  constructor(private readonly prisma: PrismaService) {
-    console.log('user resolver loaded');
-  }
+  constructor(private readonly prisma: PrismaService, private readonly config: ConfigurationService) {}
 
-  private static generateToken(data: { id: string }) {
-    return jwt.sign({ userId: data.id }, process.env.JWT_SECRET, {
+  private generateToken(data: { id: string }) {
+    return jwt.sign({ userId: data.id }, this.config.jwtSecret, {
       expiresIn: '1d',
     });
   }
@@ -91,7 +90,7 @@ export class UsersResolver {
         ...user,
         isAdmin: user.admin,
       },
-      token: UsersResolver.generateToken({ id: user.id }),
+      token: this.generateToken({ id: user.id }),
     };
   }
 
@@ -113,7 +112,7 @@ export class UsersResolver {
         ...user,
         isAdmin: user.admin,
       },
-      token: UsersResolver.generateToken({ id: user.id }),
+      token: this.generateToken({ id: user.id }),
     };
   }
 

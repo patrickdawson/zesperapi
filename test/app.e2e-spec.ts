@@ -1,48 +1,112 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import ApolloClient, { gql } from 'apollo-boost';
 import { NestFactory } from '@nestjs/core';
+import seedDatabase from './utils/seedDatabase';
 
 describe('AppController (e2e)', () => {
+  const uri = 'http://localhost:3000/graphql';
   let app;
 
   beforeAll(async () => {
     app = await NestFactory.create(AppModule);
     await app.listen(3000);
   });
-
   afterAll(async () => {
     app.close();
   });
 
-  describe('/graphql', () => {
-    it('can query users', async () => {
-      const client = new ApolloClient({
+  beforeEach(async () => {
+    await seedDatabase(app);
+  });
+
+  describe('not authenticated', () => {
+    let client;
+
+    beforeEach(() => {
+      client = new ApolloClient({
+        uri,
+      });
+      client.defaultOptions = {
+        query: {
+          errorPolicy: 'all',
+        },
+      };
+    });
+
+    it('can create a new user', async () => {
+      const result = await client.mutate({
+        mutation: gql`
+          mutation {
+            createUser(data: { name: "Patrick", email: "patrick@demo.de", password: "foo" }) {
+              token
+            }
+          }
+        `,
+      });
+      expect(result.errors).toBeUndefined();
+      expect(result.data.createUser.token).not.toBeUndefined();
+    });
+
+    it('cannot query users', async () => {
+      const result = await client.query({
+        query: gql`
+        {
+          users {
+            id
+          }
+        }
+      `,
+      });
+      expect(result.errors).toBeDefined();
+      expect(result.errors[0].message.statusCode).toEqual(401);
+    });
+
+    it('cannot query user', async () => {
+      const result = await client.query({
+        query: gql`
+        {
+          user(query: {
+            email: "patrick@demo.de"
+          }) {
+            id
+          }
+        }
+      `,
+      });
+      expect(result.errors).toBeDefined();
+      expect(result.errors[0].message.statusCode).toEqual(401);
+    });
+  });
+
+  describe('authenticated', () => {
+    let client;
+
+    beforeEach(() => {
+      client = new ApolloClient({
         uri: 'http://localhost:3000/graphql',
         headers: {
-          authorization: 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhI' +
+          authorization:
+            'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhI' +
             'jp7InNlcnZpY2UiOiJ6ZXNwZXJAZGV2Iiwicm9sZXMiOlsiYWRtaW4iXX0sImlhdCI6' +
             'MTU2MjUwMDk0MiwiZXhwIjoxNTYzMTA1NzQyfQ.5lMitCjbw80nzMnLqA9ECvMoQ3i_' +
             'Lzb582gkMZmoe1Q',
         },
       });
+    });
 
+    it('can query users', async () => {
       const result = await client.query({
-        query: gql`{ users { id } }`,
+        query: gql`
+          {
+            users {
+              id
+            }
+          }
+        `,
       });
 
       expect(result.errors).toBeUndefined();
       expect(result.data.users).toEqual([]);
-
-      // const mod = app.get(GraphQLModule);
-      // const { query } = createTestClient(mod.apolloServer);
-      // const res = await query({
-      //   query: gql`{ users { id } }`,
-      // });
-      // console.log(res);
-      // expect(res.errors).toBeUndefined();
-      // expect(res.data.users).toEqual([]);
     });
   });
 });
