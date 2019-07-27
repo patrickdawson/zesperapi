@@ -23,15 +23,15 @@ describe('HttpStrategy', () => {
   });
 
   describe('validate', () => {
-    it('calls validateUser on auth service to validate user', async () => {
-      authServiceMock.validateUser.mockResolvedValue('Hugo');
+    it('calls validateToken on auth service to validate user', async () => {
+      authServiceMock.validateToken.mockResolvedValue('Hugo');
 
       await provider.validate('myToken');
-      expect(authServiceMock.validateUser).toHaveBeenCalledWith('myToken');
+      expect(authServiceMock.validateToken).toHaveBeenCalledWith('myToken');
     });
 
-    it('throws UnauthorizedException when validateUser does not return a user', async () => {
-      authServiceMock.validateUser.mockResolvedValue(null);
+    it('throws UnauthorizedException when validateToken does not return a user', async () => {
+      authServiceMock.validateToken.mockResolvedValue(null);
 
       await expect(provider.validate('myToken')).rejects.toThrow(UnauthorizedException);
     });
