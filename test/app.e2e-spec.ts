@@ -1,9 +1,10 @@
 import { AppModule } from '../src/app.module';
 import ApolloClient, { gql } from 'apollo-boost';
 import { NestFactory } from '@nestjs/core';
+import { PrismaService } from '../src/prisma/prisma.service';
 import seedDatabase, { userOne } from './utils/seedDatabase';
 
-describe('AppController (e2e)', () => {
+describe('API (e2e)', () => {
   const uri = 'http://localhost:3000/graphql';
   let app;
 
@@ -48,6 +49,42 @@ describe('AppController (e2e)', () => {
       });
       expect(result.errors).toBeUndefined();
       expect(result.data.createUser.token).not.toBeUndefined();
+    });
+
+    it('creates new users after first user as non-admins', async () => {
+      const result = await client.mutate({
+        mutation: gql`
+          mutation {
+            createUser(data: { name: "Patrick", email: "patrick@demo.de", password: "foo" }) {
+              token
+              user {
+                isAdmin
+              }
+            }
+          }
+        `,
+      });
+      expect(result.errors).toBeUndefined();
+      expect(result.data.createUser.user.isAdmin).toBeFalsy();
+    });
+
+    it('promotes first created user to admin', async () => {
+      const prisma = app.get(PrismaService);
+      await prisma.mutation.deleteManyUsers();
+      const result = await client.mutate({
+        mutation: gql`
+          mutation {
+            createUser(data: { name: "Patrick", email: "patrick@demo.de", password: "foo" }) {
+              token
+              user {
+                isAdmin
+              }
+            }
+          }
+        `,
+      });
+      expect(result.errors).toBeUndefined();
+      expect(result.data.createUser.user.isAdmin).toBeTruthy();
     });
 
     it('can login', async () => {

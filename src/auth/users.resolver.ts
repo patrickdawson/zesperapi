@@ -51,6 +51,7 @@ export class UsersResolver {
     if (emailTaken) {
       throw new Error('Email already taken!');
     }
+    const users = await this.prisma.query.users({});
 
     const hashedPassword = await bcrypt.hash(args.data.password, 10);
 
@@ -58,7 +59,7 @@ export class UsersResolver {
       name: args.data.name,
       email: args.data.email,
       password: hashedPassword,
-      admin: !!args.data.isAdmin,
+      admin: users.length === 0,
     };
     const user = await this.prisma.mutation.createUser({
       data,

@@ -119,6 +119,10 @@ describe('UsersResolver', () => {
   });
 
   describe('createUser', () => {
+    beforeEach(() => {
+      prismaServiceMock.query.users.mockResolvedValue([]);
+    });
+
     const createUserData: { data: CreateUserInput } = {
       data: {
         email: 'test@email.de',
@@ -166,30 +170,28 @@ describe('UsersResolver', () => {
       bcrypt.hash.mockResolvedValue('hashed');
       await resolver.createUser(createUserData, '');
       expect(prismaServiceMock.mutation.createUser).toBeCalledWith({
-        data: {
-          ...createUserData.data,
-          admin: false,
+        data: expect.objectContaining({
           password: 'hashed',
-        },
+        }),
       });
     });
 
-    it('can create a admin user', async () => {
-      await resolver.createUser(
-        {
-          data: {
-            ...createUserData.data,
-            isAdmin: true,
-          },
-        },
-        '',
-      );
+    it('creates first user as admin', async () => {
+      await resolver.createUser(createUserData, '');
       expect(prismaServiceMock.mutation.createUser).toBeCalledWith({
-        data: {
-          ...createUserData.data,
+        data: expect.objectContaining({
           admin: true,
-          password: 'hashed',
-        },
+        }),
+      });
+    });
+
+    it('creates users after first user as non-admin', async () => {
+      prismaServiceMock.query.users.mockResolvedValue([{}]);
+      await resolver.createUser(createUserData, '');
+      expect(prismaServiceMock.mutation.createUser).toBeCalledWith({
+        data: expect.objectContaining({
+          admin: false,
+        }),
       });
     });
 
