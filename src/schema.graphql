@@ -1,6 +1,7 @@
 type Query {
   users: [User!]!
   user(query: UserQuery!): User!
+  menus: [Menu!]!
 }
 
 type Mutation {
@@ -35,4 +36,15 @@ input LoginUserInput {
 type AuthPayload {
   token: String!
   user: User!
+}
+
+type Menu {
+    id: ID!
+    name: String!
+}
+
+type MenuItem {
+    id: ID!
+    name: String!
+    price: Float!
 }
