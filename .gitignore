@@ -4,6 +4,7 @@
 
 # generated files
 src/generated
+test/coverage
 
 # Logs
 logs
