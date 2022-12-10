@@ -28,7 +28,7 @@
     "@nestjs/core": "^6.0.0",
     "@nestjs/graphql": "6.4.2",
     "@nestjs/passport": "6.1.0",
-    "@nestjs/platform-express": "^6.0.0",
+    "@nestjs/platform-express": "^9.2.1",
     "apollo-boost": "0.4.3",
     "apollo-server-express": "2.7.0",
     "bcryptjs": "2.4.3",
